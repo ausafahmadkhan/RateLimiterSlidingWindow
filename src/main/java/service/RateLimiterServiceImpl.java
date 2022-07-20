@@ -20,13 +20,13 @@ public class RateLimiterServiceImpl implements RateLimiterService
     @Override
     public boolean isAllowed(String userId)
     {
-        Long time = System.currentTimeMillis();
-        String key = userId + time;
+        Long currentTimeMillis = System.currentTimeMillis();
+        String key = userId + currentTimeMillis;
 
         //cumulative count in the window
         long currentCount;
 
-        currentCount = getCountInTheWindow(userId, time);
+        currentCount = getCountInTheWindow(userId, currentTimeMillis);
         System.out.println(currentCount);
 
         if (currentCount >= REQUEST_LIMIT)
@@ -40,10 +40,10 @@ public class RateLimiterServiceImpl implements RateLimiterService
         return true;
     }
 
-    private long getCountInTheWindow(String userId, Long time)
+    private long getCountInTheWindow(String userId, Long currentTimeMillis)
     {
 
-        long upperLimit = time, lowerLimit = upperLimit - WINDOW_SIZE;
+        long upperLimit = currentTimeMillis, lowerLimit = upperLimit - WINDOW_SIZE;
 
         long totalCount = 0;
 
