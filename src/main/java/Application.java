@@ -6,9 +6,9 @@ import main.java.service.RateLimiterServiceImpl;
 public class Application
 {
     public static void main(String[] args) {
-        RateLimiterService rateLimiterService = new RateLimiterServiceImpl();
+        RateLimiterService rateLimiterService = RateLimiterServiceImpl.getInstance(1000L, 5L);
 
-        for (int i = 0; i < 20 ; i++)
+        for (int i = 0; i < 10 ; i++)
         {
             try {
                 Thread.sleep(1L);

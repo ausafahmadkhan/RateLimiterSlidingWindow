@@ -1,20 +1,27 @@
 package main.java.service;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RateLimiterServiceImpl implements RateLimiterService
 {
+    private static RateLimiterService INSTANCE;
+    private final ConcurrentHashMap<String, Long> requestCount;
+    private final Long WINDOW_SIZE;
+    private final Long REQUEST_LIMIT;
 
-    private static final ConcurrentHashMap<String, Long> requestCount;
-    private static final Long WINDOW_SIZE;
-    private static final Long REQUEST_LIMIT;
+    public RateLimiterServiceImpl(Long WINDOW_SIZE, Long REQUEST_LIMIT) {
+        this.requestCount = new ConcurrentHashMap<>();
+        this.WINDOW_SIZE = WINDOW_SIZE;
+        this.REQUEST_LIMIT = REQUEST_LIMIT;
+    }
 
-
-    static
+    public static RateLimiterService getInstance(Long windowSize, Long requestLimit)
     {
-        requestCount = new ConcurrentHashMap<>();
-        WINDOW_SIZE = 10L;
-        REQUEST_LIMIT = 5L;
+        if (Objects.isNull(INSTANCE))
+            INSTANCE = new RateLimiterServiceImpl(windowSize, requestLimit);
+
+        return INSTANCE;
     }
 
     @Override
@@ -32,10 +39,7 @@ public class RateLimiterServiceImpl implements RateLimiterService
         if (currentCount >= REQUEST_LIMIT)
             return false;
 
-        if (requestCount.containsKey(key))
-            requestCount.put(key, requestCount.get(key) + 1);
-        else
-            requestCount.put(key, 1L);
+        requestCount.put(key, requestCount.getOrDefault(key, 0L) + 1);
 
         return true;
     }
